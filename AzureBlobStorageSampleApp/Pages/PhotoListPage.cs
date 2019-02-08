@@ -12,11 +12,24 @@ namespace AzureBlobStorageSampleApp
         #region Constant Fields
         readonly ListView _photosListView;
         readonly ToolbarItem _addPhotosButton;
+
+        SearchBar searchBar;
+
+
         #endregion
 
         #region Constructors
         public PhotoListPage()
         {
+
+            searchBar = new SearchBar
+            {
+                Placeholder = "Enter search term",
+                //SearchCommand = new Command(() => { Console.WriteLine($"Search command"); })
+            };
+            searchBar.SetBinding(SearchBar.SearchCommandProperty, nameof(ViewModel.SearchCommand));
+            searchBar.SetBinding(SearchBar.TextProperty, nameof(ViewModel.SearchString));   
+
             _addPhotosButton = new ToolbarItem
             {
                 Text = "+",
@@ -39,10 +52,23 @@ namespace AzureBlobStorageSampleApp
             _photosListView.SetBinding(ListView.ItemsSourceProperty, nameof(ViewModel.AllPhotosList));
             _photosListView.SetBinding(ListView.RefreshCommandProperty, nameof(ViewModel.RefreshCommand));
 
+            //#TODO - modifying size of cells
+            _photosListView.HasUnevenRows = true;
+
+
+
+
             Title = PageTitles.PhotoListPage;
 
+            var stackLayout = new StackLayout();
+            stackLayout.Children.Add(searchBar);
+            stackLayout.Children.Add(_photosListView);
+
+
             var relativeLayout = new RelativeLayout();
-            relativeLayout.Children.Add(_photosListView,
+            //relativeLayout.Children.Add(searchBar, _photosListView,
+
+            relativeLayout.Children.Add(stackLayout,
                                        Constraint.Constant(0),
                                        Constraint.Constant(0),
                                        Constraint.RelativeToParent(parent => parent.Width),
@@ -50,6 +76,7 @@ namespace AzureBlobStorageSampleApp
 
             Content = relativeLayout;
         }
+
         #endregion
 
         #region Methods

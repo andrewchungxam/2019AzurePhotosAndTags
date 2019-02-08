@@ -1,6 +1,7 @@
 using Xamarin.Forms;
 
 using AzureBlobStorageSampleApp.Shared;
+using System;
 
 namespace AzureBlobStorageSampleApp
 {
@@ -9,12 +10,15 @@ namespace AzureBlobStorageSampleApp
         #region Fields
         Command<PhotoModel> _setPhotoCommand;
         PhotoModel _photo;
+
+
+
         #endregion
 
         #region Properties
         public Command<PhotoModel> SetPhotoCommand => _setPhotoCommand ??
             (_setPhotoCommand = new Command<PhotoModel>(photo => Photo = photo));
-            
+
         public ImageSource PhotoImageSource => ImageSource.FromUri(new System.Uri(Photo.Url));
         public string PhotoTitle => Photo.Title;
 
@@ -27,6 +31,7 @@ namespace AzureBlobStorageSampleApp
                 NotifyPhotoProperties();
             }
         }
+
         #endregion
 
         #region Methods

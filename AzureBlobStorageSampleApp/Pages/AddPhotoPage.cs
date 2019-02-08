@@ -1,9 +1,10 @@
 using System;
-
+using System.Linq;
+using System.Threading.Tasks;
 using AzureBlobStorageSampleApp.Mobile.Shared;
 
 using FFImageLoading.Forms;
-
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace AzureBlobStorageSampleApp
@@ -15,6 +16,12 @@ namespace AzureBlobStorageSampleApp
         readonly Entry _photoTitleEntry;
         readonly CachedImage _photoImage;
         readonly Button _takePhotoButton;
+        readonly Label _geoLabel;
+
+        readonly string _geoString;
+        readonly string _generalCognitiveServices;
+        readonly string _entitiesCognitiveServices;
+
         #endregion
 
         #region Constructors
@@ -35,6 +42,42 @@ namespace AzureBlobStorageSampleApp
             _photoTitleEntry.SetBinding(Entry.TextProperty, nameof(ViewModel.PhotoTitle));
             _photoTitleEntry.SetBinding(Entry.ReturnCommandProperty, nameof(ViewModel.TakePhotoCommand));
 
+            _geoLabel = new Label
+            {
+                BackgroundColor = Color.White,
+                TextColor = ColorConstants.TextColor,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+            };
+
+            _geoLabel.SetBinding(Label.TextProperty, nameof(ViewModel.GeoString));
+
+            //ViewModel.GeoString = "Paramus, NJ";
+
+            //var lat = 47.673988;
+            //var lon = -122.121513;
+
+            //var placemarks = Task.Run(async () => await Geocoding.GetPlacemarksAsync(lat, lon)).Result;
+
+            //var placemark = placemarks?.FirstOrDefault();
+
+            //if (placemark != null)
+            //{
+            //    var geocodeAddress =
+            //        $"AdminArea:       {placemark.AdminArea}\n" +
+            //        $"CountryCode:     {placemark.CountryCode}\n" +
+            //        $"CountryName:     {placemark.CountryName}\n" +
+            //        $"FeatureName:     {placemark.FeatureName}\n" +
+            //        $"Locality:        {placemark.Locality}\n" +
+            //        $"PostalCode:      {placemark.PostalCode}\n" +
+            //        $"SubAdminArea:    {placemark.SubAdminArea}\n" +
+            //        $"SubLocality:     {placemark.SubLocality}\n" +
+            //        $"SubThoroughfare: {placemark.SubThoroughfare}\n" +
+            //        $"Thoroughfare:    {placemark.Thoroughfare}\n";
+
+            //    //Console.WriteLine(geocodeAddress);
+            //    ViewModel.GeoString = geocodeAddress;
+            //}
+
             _takePhotoButton = new Button
             {
                 Text = "Take Photo",
@@ -42,6 +85,10 @@ namespace AzureBlobStorageSampleApp
                 TextColor = ColorConstants.TextColor
             };
             _takePhotoButton.SetBinding(Button.CommandProperty, nameof(ViewModel.TakePhotoCommand));
+
+            //TODO - only one Command binding per Button
+            //_takePhotoButton.SetBinding(Button.CommandProperty, nameof(ViewModel.GetGeoLocationCommand));
+
             _takePhotoButton.SetBinding(IsEnabledProperty, new Binding(nameof(ViewModel.IsPhotoSaving), BindingMode.Default, new InverseBooleanConverter(), ViewModel.IsPhotoSaving));
 
             _photoImage = new CachedImage();
@@ -81,9 +128,17 @@ namespace AzureBlobStorageSampleApp
                 VerticalOptions = LayoutOptions.Start,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
 
+                //Children = {
+                //    _photoImage,
+                //    _photoTitleEntry,
+                //    _takePhotoButton,
+                //    activityIndicator
+                //}
+
                 Children = {
                     _photoImage,
                     _photoTitleEntry,
+                    _geoLabel,
                     _takePhotoButton,
                     activityIndicator
                 }

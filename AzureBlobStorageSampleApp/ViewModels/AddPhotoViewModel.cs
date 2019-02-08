@@ -12,6 +12,8 @@ using AzureBlobStorageSampleApp.Shared;
 using AzureBlobStorageSampleApp.Mobile.Shared;
 using AsyncAwaitBestPractices.MVVM;
 using AsyncAwaitBestPractices;
+using Xamarin.Essentials;
+using System.Linq;
 
 namespace AzureBlobStorageSampleApp
 {
@@ -25,6 +27,8 @@ namespace AzureBlobStorageSampleApp
 
         #region Fields
         ICommand _savePhotoCommand, _takePhotoCommand;
+        ICommand _getGeoLocationCommand;
+
         string _photoTitle, _pageTitle = PageTitles.AddPhotoPage;
         bool _isPhotoSaving;
         ImageSource _photoImageSource;
@@ -58,6 +62,10 @@ namespace AzureBlobStorageSampleApp
         public ICommand SavePhotoCommand => _savePhotoCommand ??
             (_savePhotoCommand = new AsyncCommand(() => ExecuteSavePhotoCommand(PhotoBlob, PhotoTitle), continueOnCapturedContext: false));
 
+
+        public ICommand GetGeoLocationCommand => _getGeoLocationCommand ??
+            (_getGeoLocationCommand = new AsyncCommand(ExecuteGetGeoLocationCommand, continueOnCapturedContext: false));
+
         public string PageTitle
         {
             get => _pageTitle;
@@ -87,9 +95,79 @@ namespace AzureBlobStorageSampleApp
             get => _photoBlob;
             set => SetProperty(ref _photoBlob, value, UpdatePhotoImageSource);
         }
+
+        string _geoString;
+        string _generalCognitiveServices;
+        string _entitiesCognitiveServices;
+
+        public string GeoString
+        {
+            get => _geoString;
+            set => SetProperty(ref _geoString, value);
+        }
+
+        public string GeneralCognitiveServices
+        {
+            get => _generalCognitiveServices;
+            set => SetProperty(ref _generalCognitiveServices, value);
+        }
+
+        public string EntitiesCognitiveServices
+        {
+            get => _entitiesCognitiveServices;
+            set => SetProperty(ref _entitiesCognitiveServices, value);
+        }
+
         #endregion
 
         #region Methods
+
+        async Task ExecuteGetGeoLocationCommand()
+        {
+            try
+            {
+                //this.GeoString = "Paramus, NJ";
+
+                var lat = 47.673988;
+                var lon = -122.121513;
+
+                var placemarks = Task.Run(async () => await Geocoding.GetPlacemarksAsync(lat, lon)).Result;
+
+                var placemark = placemarks?.FirstOrDefault();
+
+                if (placemark != null)
+                {
+                    //var geocodeAddress =
+                    //$"AdminArea:       {placemark.AdminArea}\n" +
+                    //$"CountryCode:     {placemark.CountryCode}\n" +
+                    //$"CountryName:     {placemark.CountryName}\n" +
+                    //$"FeatureName:     {placemark.FeatureName}\n" +
+                    //$"Locality:        {placemark.Locality}\n" +
+                    //$"PostalCode:      {placemark.PostalCode}\n" +
+                    //$"SubAdminArea:    {placemark.SubAdminArea}\n" +
+                    //$"SubLocality:     {placemark.SubLocality}\n" +
+                    //$"SubThoroughfare: {placemark.SubThoroughfare}\n" +
+                    //$"Thoroughfare:    {placemark.Thoroughfare}\n";
+
+                    var geocodeAddress = $"Location: {placemark.Locality}, {placemark.AdminArea}";
+
+                    //Console.WriteLine(geocodeAddress);
+                    this.GeoString = geocodeAddress;
+                }
+            }
+            catch (FeatureNotSupportedException fnsEx)
+            {
+                // Feature not supported on device
+                //return $"Feature not supported: {fnsEx}";
+            }
+            catch (Exception ex)
+            {
+                // Handle exception that may have occurred in geocoding
+                //return $"Error: {ex}";
+            }
+        }
+
+
         async Task ExecuteSavePhotoCommand(PhotoBlobModel photoBlob, string photoTitle)
         {
             if (IsPhotoSaving)
@@ -145,6 +223,9 @@ namespace AzureBlobStorageSampleApp
             {
                 Image = ConvertStreamToByteArrary(mediaFile.GetStream())
             };
+
+            //TODO
+            this.GetGeoLocationCommand.Execute(null);
         }
 
         byte[] ConvertStreamToByteArrary(Stream stream)
