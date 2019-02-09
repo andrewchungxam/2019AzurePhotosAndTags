@@ -14,6 +14,10 @@ using AsyncAwaitBestPractices.MVVM;
 using AsyncAwaitBestPractices;
 using Xamarin.Essentials;
 using System.Linq;
+using System.Drawing;
+using System.Collections.Generic;
+using ZXing;
+//using ScannerHelperLibrary;
 
 namespace AzureBlobStorageSampleApp
 {
@@ -212,12 +216,18 @@ namespace AzureBlobStorageSampleApp
             }
         }
 
+        BarcodeDecoding barcode;
+
         async Task ExecuteTakePhotoCommand()
         {
+
+
             var mediaFile = await GetMediaFileFromCamera().ConfigureAwait(false);
 
             if (mediaFile is null)
                 return;
+
+            var tempByteArray = ConvertStreamToByteArrary(mediaFile.GetStream());
 
             PhotoBlob = new PhotoBlobModel
             {
@@ -226,6 +236,32 @@ namespace AzureBlobStorageSampleApp
 
             //TODO
             this.GetGeoLocationCommand.Execute(null);
+
+            //TODO
+            //var barcodeScannerService = new BarcodeScannerServiceLib();
+            //var stringBarcode = barcodeScannerService.JustDecodeBarcode(PhotoBlob.Image);
+            //var stringBarcode = barcodeScannerService.DecodeBarcode(PhotoBlob.Image);
+
+            //var barcodeScannerService = new BarcodeScannerService();
+            //var byteArray = this.DoConvertMediaFileToByteArray(mediaFile);
+            //var stringBarcode = barcodeScannerService.DecodeBarcode(byteArray);
+
+
+            //System.Drawing.Bitmap(filename);
+
+            //int hi = 5;
+
+            barcode = new BarcodeDecoding();
+
+            var aditionalHints = new KeyValuePair<DecodeHintType, object>(key: DecodeHintType.PURE_BARCODE, value: "TRUE");
+
+            var result = barcode.Decode(file: "image_to_read", format: BarcodeFormat.QR_CODE, aditionalHints: new[] { aditionalHints });
+
+            //Label to show the text decoded
+            //QrResult.Text = result.Text;
+
+            var qrRest = result.Text;
+
         }
 
         byte[] ConvertStreamToByteArrary(Stream stream)
@@ -236,6 +272,24 @@ namespace AzureBlobStorageSampleApp
                 return memoryStream.ToArray();
             }
         }
+
+        //https://stackoverflow.com/questions/33947138/convert-image-into-byte-array-in-xamarin-forms
+        byte[] DoConvertMediaFileToByteArray(MediaFile mediaFile)
+        {
+
+            byte[] imageByte;
+            Stream imageStream = null;
+
+            //var file = await CrossMedia.Current.TakePhotoAsync(new Plugin.Media.Abstractions.StoreCameraMediaOptions
+            //{ Name = "pic.jpg" });
+            //if (file == null) return;
+
+            imageStream = mediaFile.GetStream();
+            BinaryReader br = new BinaryReader(imageStream);
+            return imageByte = br.ReadBytes((int)imageStream.Length);
+
+        }
+
 
         async Task<MediaFile> GetMediaFileFromCamera()
         {

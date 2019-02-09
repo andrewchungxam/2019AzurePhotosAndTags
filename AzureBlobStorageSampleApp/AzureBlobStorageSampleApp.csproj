@@ -24,6 +24,10 @@
         <PackageReference Include="Refit" Version="4.6.58" />
         <PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="2.1.0" />
         <PackageReference Include="Xamarin.Essentials" Version="1.0.1" />
+        <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
+        <PackageReference Include="Splat" Version="6.1.7" />
+        <PackageReference Include="ZXing.Net.Mobile.Forms" Version="2.4.1" />
+        <PackageReference Include="ZXing.Net.Mobile" Version="2.4.1" />
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Pages\" />
@@ -34,6 +38,9 @@
         <Folder Include="Database\" />
         <Folder Include="Views\" />
         <Folder Include="Views\PhotoList\" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\ScannerHelperLibrary\ScannerHelperLibrary.csproj" />
     </ItemGroup>
     <Import Project="..\AzureBlobStorageSampleApp.Shared\AzureBlobStorageSampleApp.Shared.projitems" Label="Shared" Condition="Exists('..\AzureBlobStorageSampleApp.Shared\AzureBlobStorageSampleApp.Shared.projitems')" />
     <Import Project="..\AzureBlobStorageSampleApp.Mobile.Shared\AzureBlobStorageSampleApp.Mobile.Shared.projitems" Label="Shared" Condition="Exists('..\AzureBlobStorageSampleApp.Mobile.Shared\AzureBlobStorageSampleApp.Mobile.Shared.projitems')" />

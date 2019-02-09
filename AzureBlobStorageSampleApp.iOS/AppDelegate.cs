@@ -11,6 +11,10 @@ namespace AzureBlobStorageSampleApp.iOS
             global::Xamarin.Forms.Forms.Init();
             FFImageLoading.Forms.Platform.CachedImageRenderer.Init();
 
+            //TODO
+            ZXing.Net.Mobile.Forms.iOS.Platform.Init();
+
+
 #if DEBUG
             Xamarin.Calabash.Start();
 #endif
