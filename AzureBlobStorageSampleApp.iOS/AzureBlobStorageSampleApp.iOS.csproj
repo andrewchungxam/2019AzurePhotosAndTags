@@ -190,6 +190,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
+    <Folder Include="InterfaceInstance\" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
@@ -206,6 +207,7 @@
     <Compile Include="Services\SQLite_iOS.cs" />
     <Compile Include="Custom Renderers\ContentPageCustomRenderer.cs" />
     <Compile Include="Custom Renderers\PhotosListImageCellCustomRenderer.cs" />
+    <Compile Include="InterfaceInstance\InterfaceImplementation.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AzureBlobStorageSampleApp\AzureBlobStorageSampleApp.csproj">

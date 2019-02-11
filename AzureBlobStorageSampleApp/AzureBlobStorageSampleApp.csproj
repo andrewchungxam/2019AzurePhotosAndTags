@@ -38,6 +38,7 @@
         <Folder Include="Database\" />
         <Folder Include="Views\" />
         <Folder Include="Views\PhotoList\" />
+        <Folder Include="Scanner\" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\ScannerHelperLibrary\ScannerHelperLibrary.csproj" />

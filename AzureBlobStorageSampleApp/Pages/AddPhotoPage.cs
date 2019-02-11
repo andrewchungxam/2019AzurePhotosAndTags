@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AzureBlobStorageSampleApp.Mobile.Shared;
-
+using AzureBlobStorageSampleApp.Scanner;
 using FFImageLoading.Forms;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -17,6 +17,7 @@ namespace AzureBlobStorageSampleApp
         readonly CachedImage _photoImage;
         readonly Button _takePhotoButton;
         readonly Label _geoLabel;
+        readonly Button _takeScanButton;
 
         readonly string _geoString;
         readonly string _generalCognitiveServices;
@@ -84,6 +85,7 @@ namespace AzureBlobStorageSampleApp
                 BackgroundColor = ColorConstants.NavigationBarBackgroundColor,
                 TextColor = ColorConstants.TextColor
             };
+
             _takePhotoButton.SetBinding(Button.CommandProperty, nameof(ViewModel.TakePhotoCommand));
 
             //TODO - only one Command binding per Button
@@ -93,6 +95,24 @@ namespace AzureBlobStorageSampleApp
 
             _photoImage = new CachedImage();
             _photoImage.SetBinding(CachedImage.SourceProperty, nameof(ViewModel.PhotoImageSource));
+
+            _takeScanButton = new Button
+            {
+                Text = "Scan barcode",
+                BackgroundColor = ColorConstants.NavigationBarBackgroundColor,
+                TextColor = ColorConstants.TextColor
+            };
+
+            //_takeScanButton.SetBinding(Button.CommandProperty, nameof(ViewModel.TakeScanCommand));
+
+            _takeScanButton.Clicked += async delegate
+            {
+                var customScanPage = new CustomScanPage();
+                await Navigation.PushAsync(customScanPage);
+            };
+
+            //_takePhotoButton.SetBinding(IsEnabledProperty, new Binding(nameof(ViewModel.IsPhotoSaving), BindingMode.Default, new InverseBooleanConverter(), ViewModel.IsPhotoSaving));
+
 
             _saveToobarItem = new ToolbarItem
             {
@@ -140,6 +160,7 @@ namespace AzureBlobStorageSampleApp
                     _photoTitleEntry,
                     _geoLabel,
                     _takePhotoButton,
+                    _takeScanButton,
                     activityIndicator
                 }
             };

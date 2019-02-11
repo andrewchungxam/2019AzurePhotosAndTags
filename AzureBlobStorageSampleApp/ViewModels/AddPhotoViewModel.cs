@@ -30,7 +30,7 @@ namespace AzureBlobStorageSampleApp
         #endregion
 
         #region Fields
-        ICommand _savePhotoCommand, _takePhotoCommand;
+        ICommand _savePhotoCommand, _takePhotoCommand, _takeScanCommand;
         ICommand _getGeoLocationCommand;
 
         string _photoTitle, _pageTitle = PageTitles.AddPhotoPage;
@@ -62,6 +62,10 @@ namespace AzureBlobStorageSampleApp
         #region Properties
         public ICommand TakePhotoCommand => _takePhotoCommand ??
             (_takePhotoCommand = new AsyncCommand(ExecuteTakePhotoCommand, continueOnCapturedContext: false));
+
+        public ICommand TakeScanCommand => _takeScanCommand ??
+            (_takeScanCommand = new AsyncCommand(ExecuteTakeScanCommand, continueOnCapturedContext: false));
+
 
         public ICommand SavePhotoCommand => _savePhotoCommand ??
             (_savePhotoCommand = new AsyncCommand(() => ExecuteSavePhotoCommand(PhotoBlob, PhotoTitle), continueOnCapturedContext: false));
@@ -216,7 +220,7 @@ namespace AzureBlobStorageSampleApp
             }
         }
 
-        BarcodeDecoding barcode;
+        //BarcodeDecoding barcode;
 
         async Task ExecuteTakePhotoCommand()
         {
@@ -251,18 +255,26 @@ namespace AzureBlobStorageSampleApp
 
             //int hi = 5;
 
-            barcode = new BarcodeDecoding();
+            //barcode = new BarcodeDecoding();
 
-            var aditionalHints = new KeyValuePair<DecodeHintType, object>(key: DecodeHintType.PURE_BARCODE, value: "TRUE");
+            //var aditionalHints = new KeyValuePair<DecodeHintType, object>(key: DecodeHintType.PURE_BARCODE, value: "TRUE");
 
-            var result = barcode.Decode(file: "image_to_read", format: BarcodeFormat.QR_CODE, aditionalHints: new[] { aditionalHints });
+            //var result = barcode.Decode(file: "image_to_read", format: BarcodeFormat.QR_CODE, aditionalHints: new[] { aditionalHints });
 
             //Label to show the text decoded
             //QrResult.Text = result.Text;
 
-            var qrRest = result.Text;
+            //var qrRest = result.Text;
 
         }
+
+        private Task ExecuteTakeScanCommand()
+        {
+            //    var customScanPage = new CustomScanPage();
+            //    //    await Navigation.PushAsync(customScanPage);
+            throw new NotImplementedException();
+        }
+
 
         byte[] ConvertStreamToByteArrary(Stream stream)
         {
