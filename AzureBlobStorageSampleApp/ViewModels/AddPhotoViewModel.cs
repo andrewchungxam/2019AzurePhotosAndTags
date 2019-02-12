@@ -126,6 +126,14 @@ namespace AzureBlobStorageSampleApp
             set => SetProperty(ref _entitiesCognitiveServices, value);
         }
 
+
+        string _barcodeString;
+        public string BarcodeString
+        {
+            get => _barcodeString;
+            set => SetProperty(ref _barcodeString, value, UpdatePageTilte);
+        }
+
         #endregion
 
         #region Methods

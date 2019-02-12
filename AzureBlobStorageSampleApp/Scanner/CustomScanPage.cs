@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AzureBlobStorageSampleApp.ViewModels;
 using Xamarin.Forms;
 using ZXing.Net.Mobile.Forms;
 
-namespace AzureBlobStorageSampleApp.Scanner
+namespace AzureBlobStorageSampleApp
 {
-    public class CustomScanPage : ContentPage
+    public class CustomScanPage : BaseContentPage<CustomScanViewModel>
     {
         ZXingScannerView zxing;
         ZXingDefaultOverlay overlay;
@@ -31,8 +32,16 @@ namespace AzureBlobStorageSampleApp.Scanner
                     // Show an alert
                     await DisplayAlert("Scanned Barcode", result.Text, "OK");
 
+                    var previousPage = Navigation.NavigationStack[Navigation.NavigationStack.Count - 2] as AddPhotoPage;
+                    var viewModelOfPreviousPage = previousPage.ViewModel;
+                    viewModelOfPreviousPage.BarcodeString = result.Text;
+
                     // Navigate away
+                    //await Navigation.PopAsync();
+
+                    viewModelOfPreviousPage.TakePhotoCommand.Execute(null);
                     await Navigation.PopAsync();
+
                 });
 
             overlay = new ZXingDefaultOverlay

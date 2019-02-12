@@ -9,7 +9,7 @@ using Xamarin.Forms;
 
 namespace AzureBlobStorageSampleApp
 {
-    public class AddPhotoPage : BaseContentPage<AddPhotoViewModel>
+    public class AddPhotoPage : BaseContentPageWithPublicViewModel<AddPhotoViewModel>
     {
         #region Constant Fields
         readonly ToolbarItem _saveToobarItem, _cancelToolbarItem;
@@ -18,6 +18,7 @@ namespace AzureBlobStorageSampleApp
         readonly Button _takePhotoButton;
         readonly Label _geoLabel;
         readonly Button _takeScanButton;
+        readonly Label _scanLabel;
 
         readonly string _geoString;
         readonly string _generalCognitiveServices;
@@ -93,6 +94,16 @@ namespace AzureBlobStorageSampleApp
 
             _takePhotoButton.SetBinding(IsEnabledProperty, new Binding(nameof(ViewModel.IsPhotoSaving), BindingMode.Default, new InverseBooleanConverter(), ViewModel.IsPhotoSaving));
 
+
+            _scanLabel = new Label
+            {
+                BackgroundColor = Color.White,
+                TextColor = ColorConstants.TextColor,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+            };
+
+            _scanLabel.SetBinding(Label.TextProperty, nameof(ViewModel.BarcodeString));
+
             _photoImage = new CachedImage();
             _photoImage.SetBinding(CachedImage.SourceProperty, nameof(ViewModel.PhotoImageSource));
 
@@ -159,6 +170,7 @@ namespace AzureBlobStorageSampleApp
                     _photoImage,
                     _photoTitleEntry,
                     _geoLabel,
+                    _scanLabel,
                     _takePhotoButton,
                     _takeScanButton,
                     activityIndicator
