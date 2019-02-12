@@ -10,6 +10,10 @@ using Plugin.Media.Abstractions;
 
 using AzureBlobStorageSampleApp.Shared;
 using AzureBlobStorageSampleApp.Mobile.Shared;
+using AzureBlobStorageSampleApp.Services;
+
+
+
 using AsyncAwaitBestPractices.MVVM;
 using AsyncAwaitBestPractices;
 using Xamarin.Essentials;
@@ -17,7 +21,11 @@ using System.Linq;
 using System.Drawing;
 using System.Collections.Generic;
 using ZXing;
+using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 //using ScannerHelperLibrary;
+using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
+using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace AzureBlobStorageSampleApp
 {
@@ -37,6 +45,7 @@ namespace AzureBlobStorageSampleApp
         bool _isPhotoSaving;
         ImageSource _photoImageSource;
         PhotoBlobModel _photoBlob;
+        ImageAnalysis analysis;
         #endregion
 
         #region Events
@@ -132,6 +141,41 @@ namespace AzureBlobStorageSampleApp
         {
             get => _barcodeString;
             set => SetProperty(ref _barcodeString, value, UpdatePageTilte);
+        }
+
+        string _descriptionCaptionOfImage;
+        public string DescriptionCaptionOfImage
+        {
+            get => _descriptionCaptionOfImage;
+            set => SetProperty(ref _descriptionCaptionOfImage, value, UpdatePageTilte);
+        }
+
+        string _tagsCombinedString;
+        public string TagsCombinedString
+        {
+            get => _tagsCombinedString;
+            set => SetProperty(ref _tagsCombinedString, value, UpdatePageTilte);
+        }
+
+        string _foregroundColor;
+        public string ForegroundColor
+        {
+            get => _foregroundColor;
+            set => SetProperty(ref _foregroundColor, value, UpdatePageTilte);
+        }
+
+        string _objectDescription;
+        public string ObjectDescription
+        {
+            get => _objectDescription;
+            set => SetProperty(ref _objectDescription, value, UpdatePageTilte);
+        }
+
+        List<string> _tagsListOfStrings;
+        public List<string> TagsListOfStrings
+        {
+            get => _tagsListOfStrings;
+            set => SetProperty(ref _tagsListOfStrings, value, UpdatePageTilte);
         }
 
         #endregion
@@ -249,6 +293,24 @@ namespace AzureBlobStorageSampleApp
             //TODO
             this.GetGeoLocationCommand.Execute(null);
 
+            IList<VisualFeatureTypes> visFeatures = new List<VisualFeatureTypes>() {
+                VisualFeatureTypes.Tags, VisualFeatureTypes.Color, VisualFeatureTypes.Categories, VisualFeatureTypes.Color, VisualFeatureTypes.Faces, VisualFeatureTypes.Objects, VisualFeatureTypes.ImageType, VisualFeatureTypes.Description
+            };
+
+            //TODO
+            var client = new VisionService();
+            using (var photoStream = mediaFile.GetStream())
+            {
+                //ImageAnalysis analysis = client.AnalyzeImageAsync(photoStream);
+                //ImageAnalysis analysis = await client.computerVisionClient.AnalyzeImageInStreamAsync(photoStream);    //AnalyzeImageInStreamAsync(photoStream);
+
+                analysis = await client.computerVisionClient.AnalyzeImageInStreamAsync(photoStream, visFeatures);                                                                                                //DisplayResults (analysis, photoStream);
+                DisplayResults(analysis);
+            }
+
+
+
+
             //TODO
             //var barcodeScannerService = new BarcodeScannerServiceLib();
             //var stringBarcode = barcodeScannerService.JustDecodeBarcode(PhotoBlob.Image);
@@ -275,6 +337,39 @@ namespace AzureBlobStorageSampleApp
             //var qrRest = result.Text;
 
         }
+
+        // Display the most relevant caption for the image
+        private void DisplayResults(ImageAnalysis analysis)
+        {
+            Console.WriteLine("Test image 1");
+            //Console.WriteLine(analysis.Description.Captions[0].Text + "\n");
+
+            this.DescriptionCaptionOfImage = analysis.Description.Captions.FirstOrDefault()?.Text ?? "";
+
+            this.ForegroundColor = analysis.Color?.DominantColorForeground ?? ""; //.FirstOrDefault()?.Text ?? "";
+            this.ObjectDescription = analysis.Objects.FirstOrDefault()?.ObjectProperty ?? "";  //.Text ?? "";
+
+            this.TagsListOfStrings = analysis.Tags.Select(t => t.Name).ToList();
+            //this.TagsCombinedString = analysis.Tags.Select(t => t.Name).ToString();
+
+            //TagsCombinedString
+            var newStringBuilder = new StringBuilder();
+
+            //foreach (var metaData in result.ResultMetadata)
+
+            foreach (var tagName in analysis.Tags.Select(t => t.Name))
+            {
+                newStringBuilder.Append($"{tagName} ");
+            }
+
+            var combinedTagString = newStringBuilder.ToString();
+            var trimCombinedString = combinedTagString.Trim();
+
+            this.TagsCombinedString = trimCombinedString;
+
+            //TagsListOfStrings
+        }
+
 
         private Task ExecuteTakeScanCommand()
         {

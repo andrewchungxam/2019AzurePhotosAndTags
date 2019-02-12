@@ -20,6 +20,11 @@ namespace AzureBlobStorageSampleApp
         readonly Button _takeScanButton;
         readonly Label _scanLabel;
 
+        readonly Label _descriptionCaptionLabel;
+        readonly Label _tagsStringLabel;
+        readonly Label _colorLabel;
+        readonly Label _objectDescription;
+
         readonly string _geoString;
         readonly string _generalCognitiveServices;
         readonly string _entitiesCognitiveServices;
@@ -41,6 +46,7 @@ namespace AzureBlobStorageSampleApp
                 HorizontalOptions = LayoutOptions.FillAndExpand,
                 ReturnType = ReturnType.Go
             };
+
             _photoTitleEntry.SetBinding(Entry.TextProperty, nameof(ViewModel.PhotoTitle));
             _photoTitleEntry.SetBinding(Entry.ReturnCommandProperty, nameof(ViewModel.TakePhotoCommand));
 
@@ -124,6 +130,41 @@ namespace AzureBlobStorageSampleApp
 
             //_takePhotoButton.SetBinding(IsEnabledProperty, new Binding(nameof(ViewModel.IsPhotoSaving), BindingMode.Default, new InverseBooleanConverter(), ViewModel.IsPhotoSaving));
 
+            _descriptionCaptionLabel = new Label
+            {
+                BackgroundColor = Color.White,
+                TextColor = ColorConstants.TextColor,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+            };
+
+            _descriptionCaptionLabel.SetBinding(Label.TextProperty, nameof(ViewModel.DescriptionCaptionOfImage));
+
+            _colorLabel = new Label
+            {
+                BackgroundColor = Color.White,
+                TextColor = ColorConstants.TextColor,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+            };
+
+            _colorLabel.SetBinding(Label.TextProperty, nameof(ViewModel.ForegroundColor));
+
+            _objectDescription = new Label
+            {
+                BackgroundColor = Color.White,
+                TextColor = ColorConstants.TextColor,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+            };
+
+            _objectDescription.SetBinding(Label.TextProperty, nameof(ViewModel.ObjectDescription));
+
+            _tagsStringLabel = new Label
+            {
+                BackgroundColor = Color.White,
+                TextColor = ColorConstants.TextColor,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+            };
+
+            _tagsStringLabel.SetBinding(Label.TextProperty, nameof(ViewModel.TagsCombinedString));
 
             _saveToobarItem = new ToolbarItem
             {
@@ -171,6 +212,9 @@ namespace AzureBlobStorageSampleApp
                     _photoTitleEntry,
                     _geoLabel,
                     _scanLabel,
+                    _descriptionCaptionLabel,
+                    _objectDescription,
+                    _tagsStringLabel,
                     _takePhotoButton,
                     _takeScanButton,
                     activityIndicator
