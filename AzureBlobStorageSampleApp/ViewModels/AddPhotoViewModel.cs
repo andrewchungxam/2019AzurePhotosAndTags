@@ -201,6 +201,27 @@ namespace AzureBlobStorageSampleApp
             set => SetProperty(ref _switchTrueColor, value);
         }
 
+        bool _isBarcode;
+        public bool IsBarcode
+        {
+            get => _isBarcode;
+            set => SetProperty(ref _isBarcode, value);
+        }
+
+        bool _isComputerVision;
+        public bool IsComputerVision
+        {
+            get => _isComputerVision;
+            set => SetProperty(ref _isComputerVision, value);
+        }
+
+        bool _isCustomVision;
+        public bool IsCustomVision
+        {
+            get => _isCustomVision;
+            set => SetProperty(ref _isCustomVision, value);
+        }        
+
         #endregion
 
         #region Methods

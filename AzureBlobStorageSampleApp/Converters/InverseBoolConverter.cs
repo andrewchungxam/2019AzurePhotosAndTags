@@ -10,6 +10,21 @@ namespace AzureBlobStorageSampleApp
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) => !((bool)value);
     }
+
+    public class AddBarcodeWordConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) { 
+            if (value == null)
+                return string.Empty;
+            var barcode = (string)value;
+            return $"Barcode: {barcode}";
+
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) { 
+            throw new NotImplementedException();
+        }
+    }
 }
 
 

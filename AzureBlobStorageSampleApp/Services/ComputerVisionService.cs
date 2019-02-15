@@ -6,7 +6,8 @@ namespace AzureBlobStorageSampleApp.Services
     public class ComputerVisionService
     {
 
-        private const string subscriptionKey = "";
+        private const string subscriptionKey = "406393f8d5934bc599bce1135494fc0e";
+
         //static readonly AzureRegions ComputerVisionRegion = AzureRegions.Eastus;
 
         //readonly IComputerVisionAPI visionAPI;

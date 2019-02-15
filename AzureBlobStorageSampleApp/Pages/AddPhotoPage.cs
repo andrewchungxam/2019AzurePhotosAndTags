@@ -31,6 +31,10 @@ namespace AzureBlobStorageSampleApp
         readonly Switch _computerVisionSwitch;
         readonly Switch _customVisionSwitch;
 
+        readonly Label _scannerSwitchLabel;
+        readonly Label _computerVisionSwitchLabel;
+        readonly Label _customVisionSwitchLabel;
+
 
         readonly string _geoString;
         readonly string _generalCognitiveServices;
@@ -59,8 +63,10 @@ namespace AzureBlobStorageSampleApp
 
             _geoLabel = new Label
             {
-                BackgroundColor = Color.White,
-                TextColor = ColorConstants.TextColor,
+                //BackgroundColor = Color.White,
+                //TextColor = ColorConstants.TextColor,
+                //HorizontalOptions = LayoutOptions.FillAndExpand,
+                TextColor = Color.White,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
             };
 
@@ -105,18 +111,19 @@ namespace AzureBlobStorageSampleApp
             //TODO - only one Command binding per Button
             //_takePhotoButton.SetBinding(Button.CommandProperty, nameof(ViewModel.GetGeoLocationCommand));
 
-            _takePhotoButton.SetBinding(IsEnabledProperty, new Binding(nameof(ViewModel.IsPhotoSaving), BindingMode.Default, new InverseBooleanConverter(), ViewModel.IsPhotoSaving));
-
+            //_takePhotoButton.SetBinding(IsEnabledProperty, new Binding(nameof(ViewModel.IsPhotoSaving), BindingMode.Default, new InverseBooleanConverter(), ViewModel.IsPhotoSaving));
+            _takePhotoButton.SetBinding(Button.IsVisibleProperty, nameof(ViewModel.IsBarcode), BindingMode.Default, new InverseBooleanConverter());
 
             _scanLabel = new Label
             {
-                BackgroundColor = Color.White,
-                TextColor = ColorConstants.TextColor,
+                //BackgroundColor = Color.White,
+                //TextColor = ColorConstants.TextColor,
+                //HorizontalOptions = LayoutOptions.FillAndExpand,
+                TextColor = Color.White,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
             };
 
-            _scanLabel.SetBinding(Label.TextProperty, nameof(ViewModel.BarcodeString));
-
+            _scanLabel.SetBinding(Label.TextProperty, nameof(ViewModel.BarcodeString), BindingMode.Default, new AddBarcodeWordConverter());
 
             _scannerSwitch = new Switch
             {
@@ -149,23 +156,91 @@ namespace AzureBlobStorageSampleApp
 
             //ViewModel.BlueColor = Color.Blue;
 
+
+//CHANGE BACK
             _scannerSwitch.SetBinding(SwitchChangeColor.TrueColorProperty, nameof(ViewModel.SwitchTrueColor));
+            _scannerSwitch.SetBinding(Switch.IsToggledProperty , nameof(ViewModel.IsBarcode));
+
+            _computerVisionSwitch = new Switch() { };
+            _computerVisionSwitch.Effects.Add(Effect.Resolve("MyCompany.SwitchChangeColorEffect"));
+            _computerVisionSwitch.SetBinding(SwitchChangeColor.TrueColorProperty, nameof(ViewModel.SwitchTrueColor));
+            _computerVisionSwitch.SetBinding(Switch.IsToggledProperty , nameof(ViewModel.IsComputerVision));
+
+
+            _customVisionSwitch = new Switch() { };
+            _customVisionSwitch.Effects.Add(Effect.Resolve("MyCompany.SwitchChangeColorEffect"));
+            _customVisionSwitch.SetBinding(SwitchChangeColor.TrueColorProperty, nameof(ViewModel.SwitchTrueColor));
+            _customVisionSwitch.SetBinding(Switch.IsToggledProperty , nameof(ViewModel.IsCustomVision));
+
 
             ViewModel.SwitchTrueColor = ColorConstants.NavigationBarBackgroundColor;
 
 
+            _scannerSwitchLabel = new Label(){ 
+                Text = "Barcode Reader",
+                //TextColor = ColorConstants.TextColor,
+                TextColor = Color.White,
+                HorizontalOptions = LayoutOptions.Start,
+                VerticalOptions = LayoutOptions.Center
+                };
 
-            _computerVisionSwitch = new Switch() { };
+
+            _computerVisionSwitchLabel = new Label(){ 
+                Text = "Vision AI",
+                //TextColor = ColorConstants.TextColor,
+                TextColor = Color.White,
+                HorizontalOptions = LayoutOptions.Start,
+                VerticalOptions = LayoutOptions.Center
+                };
+
+            _customVisionSwitchLabel = new Label(){ 
+                Text = "Custom AI",
+                //TextColor = ColorConstants.TextColor,
+                TextColor = Color.White,
+                HorizontalOptions = LayoutOptions.Start,
+                VerticalOptions = LayoutOptions.Center
+             };
+
+            Grid gridLayout = new Grid()
+            {
+            };
+
+            gridLayout.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+            gridLayout.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+            gridLayout.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+
+            gridLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            gridLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+
+            gridLayout.Children.Add(_scannerSwitchLabel, 1, 0);
+            gridLayout.Children.Add(_computerVisionSwitchLabel, 1, 1);
+            gridLayout.Children.Add(_customVisionSwitchLabel, 1, 2);
+
+            gridLayout.Children.Add(_scannerSwitch, 0, 0);
+            gridLayout.Children.Add(_computerVisionSwitch, 0, 1);
+            gridLayout.Children.Add(_customVisionSwitch, 0, 2);
+
 
             _photoImage = new CachedImage();
             _photoImage.SetBinding(CachedImage.SourceProperty, nameof(ViewModel.PhotoImageSource));
 
             _takeScanButton = new Button
             {
-                Text = "Scan barcode",
+                Text = "Scan barcode + Take photo",
                 BackgroundColor = ColorConstants.NavigationBarBackgroundColor,
                 TextColor = ColorConstants.TextColor
             };
+
+            _takeScanButton.SetBinding(Button.IsVisibleProperty, nameof(ViewModel.IsBarcode) );
+
+
+
+
+
+
+
+
 
             //_takeScanButton.SetBinding(Button.CommandProperty, nameof(ViewModel.TakeScanCommand));
 
@@ -179,8 +254,10 @@ namespace AzureBlobStorageSampleApp
 
             _descriptionCaptionLabel = new Label
             {
-                BackgroundColor = Color.White,
-                TextColor = ColorConstants.TextColor,
+                //BackgroundColor = Color.White,
+                //TextColor = ColorConstants.TextColor,
+                //HorizontalOptions = LayoutOptions.FillAndExpand,
+                TextColor = Color.White,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
             };
 
@@ -188,8 +265,10 @@ namespace AzureBlobStorageSampleApp
 
             _colorLabel = new Label
             {
-                BackgroundColor = Color.White,
-                TextColor = ColorConstants.TextColor,
+                //BackgroundColor = Color.White,
+                //TextColor = ColorConstants.TextColor,
+                //HorizontalOptions = LayoutOptions.FillAndExpand,
+                TextColor = Color.White,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
             };
 
@@ -197,8 +276,10 @@ namespace AzureBlobStorageSampleApp
 
             _objectDescription = new Label
             {
-                BackgroundColor = Color.White,
-                TextColor = ColorConstants.TextColor,
+                //BackgroundColor = Color.White,
+                //TextColor = ColorConstants.TextColor,
+                //HorizontalOptions = LayoutOptions.FillAndExpand,
+                TextColor = Color.White,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
             };
 
@@ -206,8 +287,10 @@ namespace AzureBlobStorageSampleApp
 
             _tagsStringLabel = new Label
             {
-                BackgroundColor = Color.White,
-                TextColor = ColorConstants.TextColor,
+                //BackgroundColor = Color.White,
+                //TextColor = ColorConstants.TextColor,
+                //HorizontalOptions = LayoutOptions.FillAndExpand,
+                TextColor = Color.White,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
             };
 
@@ -216,9 +299,11 @@ namespace AzureBlobStorageSampleApp
 
            _customVisionTagsStringLabel = new Label
            {
-               BackgroundColor = Color.White,
-               TextColor = ColorConstants.TextColor,
-               HorizontalOptions = LayoutOptions.FillAndExpand,
+               //BackgroundColor = Color.White,
+               //TextColor = ColorConstants.TextColor,
+               //HorizontalOptions = LayoutOptions.FillAndExpand,
+                TextColor = Color.White,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
            };
 
             _customVisionTagsStringLabel.SetBinding(Label.TextProperty, nameof(ViewModel.CustomVisionTagsCombinedString));
@@ -231,6 +316,7 @@ namespace AzureBlobStorageSampleApp
                 Priority = 0,
                 AutomationId = AutomationIdConstants.AddPhotoPage_SaveButton,
             };
+
             _saveToobarItem.SetBinding(MenuItem.CommandProperty, nameof(ViewModel.SavePhotoCommand));
             ToolbarItems.Add(_saveToobarItem);
 
@@ -280,10 +366,10 @@ namespace AzureBlobStorageSampleApp
                     _customVisionTagsStringLabel,
                     _takePhotoButton,
                     _takeScanButton,
-                    _scannerSwitch,
-                    _computerVisionSwitch,
+                    //_scannerSwitch,
                     //_computerVisionSwitch,
                     //_customVisionSwitch,
+                    gridLayout,
                     activityIndicator
                 }
             };
