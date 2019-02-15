@@ -3,7 +3,7 @@ using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 
 namespace AzureBlobStorageSampleApp.Services
 {
-    public class VisionService
+    public class ComputerVisionService
     {
 
         private const string subscriptionKey = "";
@@ -13,7 +13,7 @@ namespace AzureBlobStorageSampleApp.Services
 
         public ComputerVisionClient computerVisionClient; // = new ComputerVisionClient(new ApiKeyServiceClientCredentials(subscriptionKey)
 
-        public VisionService()
+        public ComputerVisionService()
         {
             //var creds = new ApiKeyServiceClientCredentials(ComputerVisionKey);
             //visionAPI = new ComputerVisionAPI(creds) { AzureRegion = CouputerVisionRegion };

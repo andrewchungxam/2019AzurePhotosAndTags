@@ -26,6 +26,8 @@ using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Microsoft.Cognitive.CustomVision.Prediction.Models;
+using Microsoft.Cognitive.CustomVision.Prediction;
 
 namespace AzureBlobStorageSampleApp
 {
@@ -178,6 +180,27 @@ namespace AzureBlobStorageSampleApp
             set => SetProperty(ref _tagsListOfStrings, value, UpdatePageTilte);
         }
 
+        string _customVisionTagsCombinedString;
+        public string CustomVisionTagsCombinedString
+        {
+            get => _customVisionTagsCombinedString;
+            set => SetProperty(ref _customVisionTagsCombinedString, value, UpdatePageTilte);
+        }
+
+        Xamarin.Forms.Color _blueColor;
+        public Xamarin.Forms.Color BlueColor
+        {
+            get => _blueColor;
+            set => SetProperty(ref _blueColor, value);
+        }
+
+        Xamarin.Forms.Color _switchTrueColor;
+        public Xamarin.Forms.Color SwitchTrueColor
+        {
+            get => _switchTrueColor;
+            set => SetProperty(ref _switchTrueColor, value);
+        }
+
         #endregion
 
         #region Methods
@@ -298,7 +321,7 @@ namespace AzureBlobStorageSampleApp
             };
 
             //TODO
-            var client = new VisionService();
+            var client = new ComputerVisionService();
             using (var photoStream = mediaFile.GetStream())
             {
                 //ImageAnalysis analysis = client.AnalyzeImageAsync(photoStream);
@@ -308,8 +331,10 @@ namespace AzureBlobStorageSampleApp
                 DisplayResults(analysis);
             }
 
+            //CUSTOM VISION
 
-
+            var tagList = this.GetBestTagList(mediaFile);
+            DisplayCustomVisionResults(tagList);
 
             //TODO
             //var barcodeScannerService = new BarcodeScannerServiceLib();
@@ -368,6 +393,42 @@ namespace AzureBlobStorageSampleApp
             this.TagsCombinedString = trimCombinedString;
 
             //TagsListOfStrings
+        }
+
+        // Display the most relevant caption for the image
+        private void DisplayCustomVisionResults(IEnumerable<ImageTagPredictionModel> tagList)
+        {
+            StringBuilder stringOfTags = new StringBuilder();
+
+            if (tagList == null)
+                stringOfTags.Append($"No tags found");
+            else
+                stringOfTags.Append($"Custom tags: ");
+            foreach (var tagItem in tagList)
+            {
+                stringOfTags.Append($"{tagItem.Tag} ");
+                //Console.WriteLine($"\t{c.TagName}: {c.Probability:P1}");
+            }
+
+            var combinedTagString = stringOfTags.ToString();
+            var trimCombinedString = combinedTagString.Trim();
+
+            this.CustomVisionTagsCombinedString = trimCombinedString;
+
+        }
+
+        private IEnumerable<ImageTagPredictionModel> GetBestTagList(MediaFile file)
+        {
+            using (var stream = file.GetStream())
+            {
+                //var predictImagePredictions = _endpoint.PredictImage(CustomVisionService.ProjectId, stream).Predictions;
+
+                var _endpoint = new CustomVisionService()._endpoint;
+                var predictImagePredictions = _endpoint.PredictImage(CustomVisionService.ProjectId, stream).Predictions;
+                var orderedPredictions = predictImagePredictions.OrderByDescending(p => p.Probability).Where(p => p.Probability > CustomVisionService.ProbabilityThreshold);
+
+                return orderedPredictions;
+            }
         }
 
 

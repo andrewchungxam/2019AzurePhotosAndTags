@@ -6,6 +6,7 @@ using AzureBlobStorageSampleApp.Scanner;
 using FFImageLoading.Forms;
 using Xamarin.Essentials;
 using Xamarin.Forms;
+using AzureBlobStorageSampleApp.Effects;
 
 namespace AzureBlobStorageSampleApp
 {
@@ -24,6 +25,12 @@ namespace AzureBlobStorageSampleApp
         readonly Label _tagsStringLabel;
         readonly Label _colorLabel;
         readonly Label _objectDescription;
+        readonly Label _customVisionTagsStringLabel;
+
+        readonly Switch _scannerSwitch;
+        readonly Switch _computerVisionSwitch;
+        readonly Switch _customVisionSwitch;
+
 
         readonly string _geoString;
         readonly string _generalCognitiveServices;
@@ -110,6 +117,46 @@ namespace AzureBlobStorageSampleApp
 
             _scanLabel.SetBinding(Label.TextProperty, nameof(ViewModel.BarcodeString));
 
+
+            _scannerSwitch = new Switch
+            {
+                //BackgroundColor = ColorConstants.NavigationBarBackgroundColor,
+                //effects:SwitchChangeColor.FalseColor="#AAEE00",
+                //effects:SwitchChangeColor.TrueColor="Blue",
+               //IsToggled = false,
+                
+
+
+
+
+
+            };
+            //_computerVisionSwitch,
+            //_customVisionSwitch,
+
+
+            //_scannerSwitch.SetBinding(SwitchChangeColor.TrueColorProperty, nameof(Color.Blue));
+
+
+
+            //            _scannerSwitch.Effects.Add(Effect.Resolve("MyCompany.SwitchChangeColor"));
+
+            //_scannerSwitch.SetBinding(SwitchChangeColor.TrueColorProperty, nameof(Color.Red));
+
+            _scannerSwitch.Effects.Add(Effect.Resolve("MyCompany.SwitchChangeColorEffect"));
+
+            //_scannerSwitch.SetBinding(SwitchChangeColor.FalseColorProperty, nameof(ViewModel.BlueColor));
+
+            //ViewModel.BlueColor = Color.Blue;
+
+            _scannerSwitch.SetBinding(SwitchChangeColor.TrueColorProperty, nameof(ViewModel.SwitchTrueColor));
+
+            ViewModel.SwitchTrueColor = ColorConstants.NavigationBarBackgroundColor;
+
+
+
+            _computerVisionSwitch = new Switch() { };
+
             _photoImage = new CachedImage();
             _photoImage.SetBinding(CachedImage.SourceProperty, nameof(ViewModel.PhotoImageSource));
 
@@ -166,6 +213,18 @@ namespace AzureBlobStorageSampleApp
 
             _tagsStringLabel.SetBinding(Label.TextProperty, nameof(ViewModel.TagsCombinedString));
 
+
+           _customVisionTagsStringLabel = new Label
+           {
+               BackgroundColor = Color.White,
+               TextColor = ColorConstants.TextColor,
+               HorizontalOptions = LayoutOptions.FillAndExpand,
+           };
+
+            _customVisionTagsStringLabel.SetBinding(Label.TextProperty, nameof(ViewModel.CustomVisionTagsCombinedString));
+
+
+
             _saveToobarItem = new ToolbarItem
             {
                 Text = "Save",
@@ -207,7 +266,10 @@ namespace AzureBlobStorageSampleApp
                 //    activityIndicator
                 //}
 
-                Children = {
+
+
+
+            Children = {
                     _photoImage,
                     _photoTitleEntry,
                     _geoLabel,
@@ -215,8 +277,13 @@ namespace AzureBlobStorageSampleApp
                     _descriptionCaptionLabel,
                     _objectDescription,
                     _tagsStringLabel,
+                    _customVisionTagsStringLabel,
                     _takePhotoButton,
                     _takeScanButton,
+                    _scannerSwitch,
+                    _computerVisionSwitch,
+                    //_computerVisionSwitch,
+                    //_customVisionSwitch,
                     activityIndicator
                 }
             };

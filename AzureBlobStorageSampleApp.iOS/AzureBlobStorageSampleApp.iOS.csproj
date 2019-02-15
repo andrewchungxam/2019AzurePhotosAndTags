@@ -188,6 +188,9 @@
     <Reference Include="Microsoft.Azure.CognitiveServices.Vision.ComputerVision">
       <HintPath>..\packages\Microsoft.Azure.CognitiveServices.Vision.ComputerVision.3.3.0\lib\netstandard1.4\Microsoft.Azure.CognitiveServices.Vision.ComputerVision.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Cognitive.CustomVision.Prediction">
+      <HintPath>..\packages\Microsoft.Cognitive.CustomVision.Prediction.1.2.0\lib\dotnet\Microsoft.Cognitive.CustomVision.Prediction.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json">
@@ -200,6 +203,7 @@
   <ItemGroup>
     <Folder Include="Resources\" />
     <Folder Include="InterfaceInstance\" />
+    <Folder Include="Effects\" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
@@ -217,6 +221,7 @@
     <Compile Include="Custom Renderers\ContentPageCustomRenderer.cs" />
     <Compile Include="Custom Renderers\PhotosListImageCellCustomRenderer.cs" />
     <Compile Include="InterfaceInstance\InterfaceImplementation.cs" />
+    <Compile Include="Effects\SwitchChangeColor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AzureBlobStorageSampleApp\AzureBlobStorageSampleApp.csproj">
