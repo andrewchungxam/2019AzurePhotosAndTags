@@ -26,7 +26,10 @@ namespace AzureBlobStorageSampleApp
             {
                 Placeholder = "Enter search term",
                 //SearchCommand = new Command(() => { Console.WriteLine($"Search command"); })
+                BackgroundColor = Color.Wheat,
+
             };
+
             searchBar.SetBinding(SearchBar.SearchCommandProperty, nameof(ViewModel.SearchCommand));
             searchBar.SetBinding(SearchBar.TextProperty, nameof(ViewModel.SearchString));   
 

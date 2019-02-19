@@ -235,13 +235,6 @@ namespace AzureBlobStorageSampleApp
             _takeScanButton.SetBinding(Button.IsVisibleProperty, nameof(ViewModel.IsBarcode) );
 
 
-
-
-
-
-
-
-
             //_takeScanButton.SetBinding(Button.CommandProperty, nameof(ViewModel.TakeScanCommand));
 
             _takeScanButton.Clicked += async delegate
@@ -261,7 +254,9 @@ namespace AzureBlobStorageSampleApp
                 HorizontalOptions = LayoutOptions.FillAndExpand,
             };
 
-            _descriptionCaptionLabel.SetBinding(Label.TextProperty, nameof(ViewModel.DescriptionCaptionOfImage));
+            _descriptionCaptionLabel.SetBinding(Label.TextProperty, nameof(ViewModel.DescriptionCaptionOfImage), BindingMode.Default, new AddCaptionWordConverter());
+            _descriptionCaptionLabel.SetBinding(Label.IsVisibleProperty, nameof(ViewModel.IsComputerVision));
+
 
             _colorLabel = new Label
             {
@@ -272,7 +267,10 @@ namespace AzureBlobStorageSampleApp
                 HorizontalOptions = LayoutOptions.FillAndExpand,
             };
 
-            _colorLabel.SetBinding(Label.TextProperty, nameof(ViewModel.ForegroundColor));
+            //_colorLabel.SetBinding(Label.TextProperty, nameof(ViewModel.ForegroundColor), BindingMode.Default, new AddColorWordConverter());
+
+            _colorLabel.SetBinding(Label.TextProperty, nameof(ViewModel.ColorsCombinedString), BindingMode.Default, new AddColorWordConverter());
+            _colorLabel.SetBinding(Label.IsVisibleProperty, nameof(ViewModel.IsComputerVision));
 
             _objectDescription = new Label
             {
@@ -283,7 +281,9 @@ namespace AzureBlobStorageSampleApp
                 HorizontalOptions = LayoutOptions.FillAndExpand,
             };
 
-            _objectDescription.SetBinding(Label.TextProperty, nameof(ViewModel.ObjectDescription));
+            _objectDescription.SetBinding(Label.TextProperty, nameof(ViewModel.ObjectDescription), BindingMode.Default, new AddObjectDescriptionWordConverter());
+            _objectDescription.SetBinding(Label.IsVisibleProperty, nameof(ViewModel.IsComputerVision));
+
 
             _tagsStringLabel = new Label
             {
@@ -294,8 +294,8 @@ namespace AzureBlobStorageSampleApp
                 HorizontalOptions = LayoutOptions.FillAndExpand,
             };
 
-            _tagsStringLabel.SetBinding(Label.TextProperty, nameof(ViewModel.TagsCombinedString));
-
+            _tagsStringLabel.SetBinding(Label.TextProperty, nameof(ViewModel.TagsCombinedString), BindingMode.Default, new AddTagsWordConverter());
+            _tagsStringLabel.SetBinding(Label.IsVisibleProperty, nameof(ViewModel.IsComputerVision));
 
            _customVisionTagsStringLabel = new Label
            {
@@ -306,9 +306,8 @@ namespace AzureBlobStorageSampleApp
                 HorizontalOptions = LayoutOptions.FillAndExpand,
            };
 
-            _customVisionTagsStringLabel.SetBinding(Label.TextProperty, nameof(ViewModel.CustomVisionTagsCombinedString));
-
-
+            _customVisionTagsStringLabel.SetBinding(Label.TextProperty, nameof(ViewModel.CustomVisionTagsCombinedString), BindingMode.Default, new AddCustomVisionWordConverter());
+            _customVisionTagsStringLabel.SetBinding(Label.IsVisibleProperty, nameof(ViewModel.IsCustomVision));
 
             _saveToobarItem = new ToolbarItem
             {
@@ -355,23 +354,42 @@ namespace AzureBlobStorageSampleApp
 
 
 
+            //Children = {
+                //    _photoImage,
+                //    _photoTitleEntry,
+                //    _scanLabel,
+                //    _geoLabel,
+                //    _descriptionCaptionLabel,
+                //    _objectDescription,
+                //    _colorLabel,
+                //    _tagsStringLabel,
+                //    _customVisionTagsStringLabel,
+                //    _takePhotoButton,
+                //    _takeScanButton,
+                //    //_scannerSwitch,
+                //    //_computerVisionSwitch,
+                //    //_customVisionSwitch,
+                //    gridLayout,
+                //    activityIndicator
+                //}
+
             Children = {
                     _photoImage,
                     _photoTitleEntry,
-                    _geoLabel,
                     _scanLabel,
-                    _descriptionCaptionLabel,
-                    _objectDescription,
-                    _tagsStringLabel,
-                    _customVisionTagsStringLabel,
+                    _geoLabel,
                     _takePhotoButton,
                     _takeScanButton,
-                    //_scannerSwitch,
-                    //_computerVisionSwitch,
-                    //_customVisionSwitch,
                     gridLayout,
-                    activityIndicator
+                    activityIndicator,
+                    _descriptionCaptionLabel,
+                    _objectDescription,
+                    _colorLabel,
+                    _tagsStringLabel,
+                    _customVisionTagsStringLabel,
+
                 }
+
             };
 
             Content = new ScrollView { Content = stackLayout };

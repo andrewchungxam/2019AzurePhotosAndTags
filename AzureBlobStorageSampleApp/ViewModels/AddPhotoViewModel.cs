@@ -163,7 +163,14 @@ namespace AzureBlobStorageSampleApp
         public string ForegroundColor
         {
             get => _foregroundColor;
-            set => SetProperty(ref _foregroundColor, value, UpdatePageTilte);
+            set => SetProperty(ref _foregroundColor, value);
+        }
+
+       string _colorsCombinedString;
+        public string ColorsCombinedString
+        {
+            get => _colorsCombinedString;
+            set => SetProperty(ref _colorsCombinedString, value, UpdatePageTilte);
         }
 
         string _objectDescription;
@@ -178,6 +185,13 @@ namespace AzureBlobStorageSampleApp
         {
             get => _tagsListOfStrings;
             set => SetProperty(ref _tagsListOfStrings, value, UpdatePageTilte);
+        }
+
+        List<string> _colorsListOfStrings;
+        public List<string> ColorsListOfStrings
+        {
+            get => _colorsListOfStrings;
+            set => SetProperty(ref _colorsListOfStrings, value);
         }
 
         string _customVisionTagsCombinedString;
@@ -222,53 +236,158 @@ namespace AzureBlobStorageSampleApp
             set => SetProperty(ref _isCustomVision, value);
         }        
 
+        Xamarin.Essentials.Location _location;
+
         #endregion
 
         #region Methods
 
+        //async Task ExecuteGetGeoLocationCommand()
+        //{
+
+        //    try
+        //    {
+
+        //            try
+        //            {
+
+        //                //Device.BeginInvokeOnMainThread(async () =>
+        //                //{
+        //                //    _location = await Geolocation.GetLastKnownLocationAsync();
+        //                //});
+
+
+        //                Device.BeginInvokeOnMainThread(() =>
+        //                {
+        //                    _location = Geolocation.GetLastKnownLocationAsync();
+        //                });
+        //                //var location1 = await Geolocation.GetLastKnownLocationAsync();
+        //                //LastLocation = FormatLocation(location);'
+
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                Console.WriteLine($"error: {ex}");
+        //            }
+
+        //       //var location = await Geolocation.GetLastKnownLocationAsync();
+        //        //var location = await Geolocation.GetLocationAsync();   
+
+        //        if (_location != null)
+        //        {
+        //            Console.WriteLine($"Latitude: {_location.Latitude}, Longitude: {_location.Longitude}, Altitude: {_location.Altitude}");
+        //        } else
+        //        {
+        //            Console.WriteLine($"Exiting geolocation");
+        //            //return;
+        //        }
+
+        //        //this.GeoString = "Paramus, NJ";
+
+        //        //var lat = 47.673988;
+        //        //var lon = -122.121513;
+
+        //        //var placemarks = Task.Run(async () => await Geocoding.GetPlacemarksAsync(lat, lon)).Result;
+
+        //        var lat = 47.673988;
+        //        var lon = -122.121513;
+            
+        //        var placemarks = Task.Run(async () => await Geocoding.GetPlacemarksAsync(_location.Latitude, _location.Longitude)).Result;
+
+
+        //        var placemark = placemarks?.FirstOrDefault();
+
+        //        if (placemark != null)
+        //        {
+        //            //var geocodeAddress =
+        //            //$"AdminArea:       {placemark.AdminArea}\n" +
+        //            //$"CountryCode:     {placemark.CountryCode}\n" +
+        //            //$"CountryName:     {placemark.CountryName}\n" +
+        //            //$"FeatureName:     {placemark.FeatureName}\n" +
+        //            //$"Locality:        {placemark.Locality}\n" +
+        //            //$"PostalCode:      {placemark.PostalCode}\n" +
+        //            //$"SubAdminArea:    {placemark.SubAdminArea}\n" +
+        //            //$"SubLocality:     {placemark.SubLocality}\n" +
+        //            //$"SubThoroughfare: {placemark.SubThoroughfare}\n" +
+        //            //$"Thoroughfare:    {placemark.Thoroughfare}\n";
+
+        //            var geocodeAddress = $"Location: {placemark.Locality}, {placemark.AdminArea}";
+
+        //            //Console.WriteLine(geocodeAddress);
+        //            this.GeoString = geocodeAddress;
+        //        }
+        //    }
+        //    catch (FeatureNotSupportedException fnsEx)
+        //    {
+        //        // Feature not supported on device
+        //        //return $"Feature not supported: {fnsEx}";
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Handle exception that may have occurred in geocoding
+        //        //return $"Error: {ex}";
+        //    }
+
+        //}
+
+
         async Task ExecuteGetGeoLocationCommand()
         {
+
             try
             {
-                //this.GeoString = "Paramus, NJ";
+
+                var locationFromPhone = await GetLocationFromPhone().ConfigureAwait(false);
+
+                if (locationFromPhone is null)
+                    return;
+
+                _location = locationFromPhone;
+
+                if (_location != null)
+                {
+                    Console.WriteLine($"Latitude: {_location.Latitude}, Longitude: {_location.Longitude}, Altitude: {_location.Altitude}");
+                } else
+                {
+                    Console.WriteLine($"Exiting geolocation");
+                }
 
                 var lat = 47.673988;
                 var lon = -122.121513;
+            
+                var placemarks = Task.Run(async () => await Geocoding.GetPlacemarksAsync(_location.Latitude, _location.Longitude)).Result;
 
-                var placemarks = Task.Run(async () => await Geocoding.GetPlacemarksAsync(lat, lon)).Result;
 
                 var placemark = placemarks?.FirstOrDefault();
 
                 if (placemark != null)
                 {
-                    //var geocodeAddress =
-                    //$"AdminArea:       {placemark.AdminArea}\n" +
-                    //$"CountryCode:     {placemark.CountryCode}\n" +
-                    //$"CountryName:     {placemark.CountryName}\n" +
-                    //$"FeatureName:     {placemark.FeatureName}\n" +
-                    //$"Locality:        {placemark.Locality}\n" +
-                    //$"PostalCode:      {placemark.PostalCode}\n" +
-                    //$"SubAdminArea:    {placemark.SubAdminArea}\n" +
-                    //$"SubLocality:     {placemark.SubLocality}\n" +
-                    //$"SubThoroughfare: {placemark.SubThoroughfare}\n" +
-                    //$"Thoroughfare:    {placemark.Thoroughfare}\n";
-
                     var geocodeAddress = $"Location: {placemark.Locality}, {placemark.AdminArea}";
-
-                    //Console.WriteLine(geocodeAddress);
                     this.GeoString = geocodeAddress;
                 }
             }
             catch (FeatureNotSupportedException fnsEx)
             {
-                // Feature not supported on device
-                //return $"Feature not supported: {fnsEx}";
+                //return await $"Error: {fnsEx}";
             }
             catch (Exception ex)
             {
-                // Handle exception that may have occurred in geocoding
-                //return $"Error: {ex}";
+                //return await $"Error: {ex}";
             }
+        }
+
+
+        async Task<Xamarin.Essentials.Location> GetLocationFromPhone()
+        {
+
+            var locationTaskCompletionSource = new TaskCompletionSource<Xamarin.Essentials.Location>();
+            Device.BeginInvokeOnMainThread( async () =>
+                {
+                    locationTaskCompletionSource.SetResult(await Geolocation.GetLastKnownLocationAsync());
+                }   
+            );
+
+            return await locationTaskCompletionSource.Task;
         }
 
 
@@ -334,28 +453,38 @@ namespace AzureBlobStorageSampleApp
                 Image = ConvertStreamToByteArrary(mediaFile.GetStream())
             };
 
-            //TODO
-            this.GetGeoLocationCommand.Execute(null);
 
-            IList<VisualFeatureTypes> visFeatures = new List<VisualFeatureTypes>() {
-                VisualFeatureTypes.Tags, VisualFeatureTypes.Color, VisualFeatureTypes.Categories, VisualFeatureTypes.Color, VisualFeatureTypes.Faces, VisualFeatureTypes.Objects, VisualFeatureTypes.ImageType, VisualFeatureTypes.Description
-            };
-
-            //TODO
-            var client = new ComputerVisionService();
-            using (var photoStream = mediaFile.GetStream())
+            if (IsComputerVision || IsCustomVision)
             {
-                //ImageAnalysis analysis = client.AnalyzeImageAsync(photoStream);
-                //ImageAnalysis analysis = await client.computerVisionClient.AnalyzeImageInStreamAsync(photoStream);    //AnalyzeImageInStreamAsync(photoStream);
-
-                analysis = await client.computerVisionClient.AnalyzeImageInStreamAsync(photoStream, visFeatures);                                                                                                //DisplayResults (analysis, photoStream);
-                DisplayResults(analysis);
+                //TODO
+                this.GetGeoLocationCommand.Execute(null);
             }
 
-            //CUSTOM VISION
+            if (IsComputerVision)
+            {
+                //COMPUTER VISION
+                IList<VisualFeatureTypes> visFeatures = new List<VisualFeatureTypes>() {
+                    VisualFeatureTypes.Tags, VisualFeatureTypes.Color, VisualFeatureTypes.Categories, VisualFeatureTypes.Color, VisualFeatureTypes.Faces, VisualFeatureTypes.Objects, VisualFeatureTypes.ImageType, VisualFeatureTypes.Description
+                };
+     
+                //TODO
+                var client = new ComputerVisionService();
+                using (var photoStream = mediaFile.GetStream())
+                {
+                    //ImageAnalysis analysis = client.AnalyzeImageAsync(photoStream);
+                    //ImageAnalysis analysis = await client.computerVisionClient.AnalyzeImageInStreamAsync(photoStream);    //AnalyzeImageInStreamAsync(photoStream);
 
-            var tagList = this.GetBestTagList(mediaFile);
-            DisplayCustomVisionResults(tagList);
+                    analysis = await client.computerVisionClient.AnalyzeImageInStreamAsync(photoStream, visFeatures);                                                                                                //DisplayResults (analysis, photoStream);
+                    DisplayResults(analysis);
+                }
+            }
+        
+            if (IsCustomVision)
+            {
+               //CUSTOM VISION
+                var tagList = this.GetBestTagList(mediaFile);
+                DisplayCustomVisionResults(tagList);
+            }
 
             //TODO
             //var barcodeScannerService = new BarcodeScannerServiceLib();
@@ -393,6 +522,29 @@ namespace AzureBlobStorageSampleApp
             this.DescriptionCaptionOfImage = analysis.Description.Captions.FirstOrDefault()?.Text ?? "";
 
             this.ForegroundColor = analysis.Color?.DominantColorForeground ?? ""; //.FirstOrDefault()?.Text ?? "";
+
+            //this.ColorsListOfStrings = analysis.Color.Select(t => t.DominantColors).ToList();
+            this.ColorsListOfStrings = analysis.Color.DominantColors.ToList();
+
+
+            var newStringBuilder1 = new StringBuilder();
+
+            //foreach (var metaData in result.ResultMetadata)
+
+            //foreach (var colorName in analysis.Tags.Select(t => t.Name))
+            foreach (var colorName in analysis.Color.DominantColors.Select(x=>x.ToLower()).ToList())
+            {
+                newStringBuilder1.Append($"#{colorName} ");
+            }
+
+            var combinedTagString1 = newStringBuilder1.ToString();
+            var trimCombinedString1 = combinedTagString1.Trim();
+
+            this.ColorsCombinedString = trimCombinedString1;
+
+
+
+
             this.ObjectDescription = analysis.Objects.FirstOrDefault()?.ObjectProperty ?? "";  //.Text ?? "";
 
             this.TagsListOfStrings = analysis.Tags.Select(t => t.Name).ToList();
@@ -405,7 +557,7 @@ namespace AzureBlobStorageSampleApp
 
             foreach (var tagName in analysis.Tags.Select(t => t.Name))
             {
-                newStringBuilder.Append($"{tagName} ");
+                newStringBuilder.Append($"#{tagName} ");
             }
 
             var combinedTagString = newStringBuilder.ToString();
@@ -424,10 +576,10 @@ namespace AzureBlobStorageSampleApp
             if (tagList == null)
                 stringOfTags.Append($"No tags found");
             else
-                stringOfTags.Append($"Custom tags: ");
+                //stringOfTags.Append($"Custom tags: ");
             foreach (var tagItem in tagList)
             {
-                stringOfTags.Append($"{tagItem.Tag} ");
+                stringOfTags.Append($"#{tagItem.Tag} ");
                 //Console.WriteLine($"\t{c.TagName}: {c.Probability:P1}");
             }
 

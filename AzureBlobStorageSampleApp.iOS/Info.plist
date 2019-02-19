@@ -46,5 +46,7 @@
 	<string>Use the camera to take a new photo</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs access location when open.</string>
 </dict>
 </plist>
