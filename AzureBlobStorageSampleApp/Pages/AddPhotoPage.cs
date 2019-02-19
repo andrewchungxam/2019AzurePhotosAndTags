@@ -21,6 +21,10 @@ namespace AzureBlobStorageSampleApp
         readonly Button _takeScanButton;
         readonly Label _scanLabel;
 
+        readonly Button _getPhotoGalleryButton;
+        readonly Switch _photoGallerySwitch;
+        readonly Label _photoGalleryLabel;
+
         readonly Label _descriptionCaptionLabel;
         readonly Label _tagsStringLabel;
         readonly Label _colorLabel;
@@ -103,7 +107,8 @@ namespace AzureBlobStorageSampleApp
             {
                 Text = "Take Photo",
                 BackgroundColor = ColorConstants.NavigationBarBackgroundColor,
-                TextColor = ColorConstants.TextColor
+                //TextColor = ColorConstants.TextColor
+                TextColor = Color.White,
             };
 
             _takePhotoButton.SetBinding(Button.CommandProperty, nameof(ViewModel.TakePhotoCommand));
@@ -113,6 +118,19 @@ namespace AzureBlobStorageSampleApp
 
             //_takePhotoButton.SetBinding(IsEnabledProperty, new Binding(nameof(ViewModel.IsPhotoSaving), BindingMode.Default, new InverseBooleanConverter(), ViewModel.IsPhotoSaving));
             _takePhotoButton.SetBinding(Button.IsVisibleProperty, nameof(ViewModel.IsBarcode), BindingMode.Default, new InverseBooleanConverter());
+
+
+            _getPhotoGalleryButton = new Button
+            { 
+                Text = "Pick Photo",
+                //BackgroundColor = ColorConstants.NavigationBarBackgroundColor,
+                //TextColor = ColorConstants.TextColor    
+                BackgroundColor = Color.White,
+                TextColor = ColorConstants.NavigationBarBackgroundColor,                        
+            };
+
+            _getPhotoGalleryButton.SetBinding(Button.CommandProperty, nameof(ViewModel.GetPhotoCommand));
+            _getPhotoGalleryButton.SetBinding(Button.IsVisibleProperty, nameof(ViewModel.IsPhotoGallery));
 
             _scanLabel = new Label
             {
@@ -172,6 +190,11 @@ namespace AzureBlobStorageSampleApp
             _customVisionSwitch.SetBinding(SwitchChangeColor.TrueColorProperty, nameof(ViewModel.SwitchTrueColor));
             _customVisionSwitch.SetBinding(Switch.IsToggledProperty , nameof(ViewModel.IsCustomVision));
 
+            _photoGallerySwitch = new Switch() { };
+            _photoGallerySwitch.Effects.Add(Effect.Resolve("MyCompany.SwitchChangeColorEffect"));
+            _photoGallerySwitch.SetBinding(SwitchChangeColor.TrueColorProperty, nameof(ViewModel.SwitchTrueColor));
+            _photoGallerySwitch.SetBinding(Switch.IsToggledProperty , nameof(ViewModel.IsPhotoGallery));
+
 
             ViewModel.SwitchTrueColor = ColorConstants.NavigationBarBackgroundColor;
 
@@ -184,6 +207,13 @@ namespace AzureBlobStorageSampleApp
                 VerticalOptions = LayoutOptions.Center
                 };
 
+            _photoGalleryLabel = new Label(){ 
+                Text = "Pick Photo",
+                //TextColor = ColorConstants.TextColor,
+                TextColor = Color.White,
+                HorizontalOptions = LayoutOptions.Start,
+                VerticalOptions = LayoutOptions.Center
+                };
 
             _computerVisionSwitchLabel = new Label(){ 
                 Text = "Vision AI",
@@ -208,19 +238,21 @@ namespace AzureBlobStorageSampleApp
             gridLayout.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
             gridLayout.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
             gridLayout.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+            gridLayout.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
 
             gridLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             gridLayout.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
 
 
             gridLayout.Children.Add(_scannerSwitchLabel, 1, 0);
-            gridLayout.Children.Add(_computerVisionSwitchLabel, 1, 1);
-            gridLayout.Children.Add(_customVisionSwitchLabel, 1, 2);
+            gridLayout.Children.Add(_photoGalleryLabel, 1, 1);
+            gridLayout.Children.Add(_computerVisionSwitchLabel, 1, 2);
+            gridLayout.Children.Add(_customVisionSwitchLabel, 1, 3);
 
             gridLayout.Children.Add(_scannerSwitch, 0, 0);
-            gridLayout.Children.Add(_computerVisionSwitch, 0, 1);
-            gridLayout.Children.Add(_customVisionSwitch, 0, 2);
-
+            gridLayout.Children.Add(_photoGallerySwitch, 0, 1);
+            gridLayout.Children.Add(_computerVisionSwitch, 0, 2);
+            gridLayout.Children.Add(_customVisionSwitch, 0, 3);
 
             _photoImage = new CachedImage();
             _photoImage.SetBinding(CachedImage.SourceProperty, nameof(ViewModel.PhotoImageSource));
@@ -229,7 +261,8 @@ namespace AzureBlobStorageSampleApp
             {
                 Text = "Scan barcode + Take photo",
                 BackgroundColor = ColorConstants.NavigationBarBackgroundColor,
-                TextColor = ColorConstants.TextColor
+                //TextColor = ColorConstants.TextColor,
+                TextColor = Color.White,
             };
 
             _takeScanButton.SetBinding(Button.IsVisibleProperty, nameof(ViewModel.IsBarcode) );
@@ -380,6 +413,7 @@ namespace AzureBlobStorageSampleApp
                     _geoLabel,
                     _takePhotoButton,
                     _takeScanButton,
+                    _getPhotoGalleryButton,
                     gridLayout,
                     activityIndicator,
                     _descriptionCaptionLabel,

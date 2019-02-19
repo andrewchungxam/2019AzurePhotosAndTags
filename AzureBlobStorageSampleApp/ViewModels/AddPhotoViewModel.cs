@@ -37,11 +37,15 @@ namespace AzureBlobStorageSampleApp
         readonly WeakEventManager _noCameraFoundEventManager = new WeakEventManager();
         readonly WeakEventManager _savePhotoCompletedEventManager = new WeakEventManager();
         readonly WeakEventManager<string> _savePhotoFailedEventManager = new WeakEventManager<string>();
+
+        readonly WeakEventManager _noCameraPickerFoundEventManager = new WeakEventManager();
+
         #endregion
 
         #region Fields
         ICommand _savePhotoCommand, _takePhotoCommand, _takeScanCommand;
         ICommand _getGeoLocationCommand;
+        ICommand _getPhotoCommand;
 
         string _photoTitle, _pageTitle = PageTitles.AddPhotoPage;
         bool _isPhotoSaving;
@@ -55,6 +59,12 @@ namespace AzureBlobStorageSampleApp
         {
             add => _noCameraFoundEventManager.AddEventHandler(value);
             remove => _noCameraFoundEventManager.RemoveEventHandler(value);
+        }
+
+        public event EventHandler NoCameraPickerFound
+        {
+            add => _noCameraPickerFoundEventManager.AddEventHandler(value);
+            remove => _noCameraPickerFoundEventManager.RemoveEventHandler(value);
         }
 
         public event EventHandler SavePhotoCompleted
@@ -74,6 +84,9 @@ namespace AzureBlobStorageSampleApp
         public ICommand TakePhotoCommand => _takePhotoCommand ??
             (_takePhotoCommand = new AsyncCommand(ExecuteTakePhotoCommand, continueOnCapturedContext: false));
 
+        public ICommand GetPhotoCommand => _getPhotoCommand ??
+            (_getPhotoCommand = new AsyncCommand(ExecuteGetPhotoCommand, continueOnCapturedContext: false));
+
         public ICommand TakeScanCommand => _takeScanCommand ??
             (_takeScanCommand = new AsyncCommand(ExecuteTakeScanCommand, continueOnCapturedContext: false));
 
@@ -84,6 +97,9 @@ namespace AzureBlobStorageSampleApp
 
         public ICommand GetGeoLocationCommand => _getGeoLocationCommand ??
             (_getGeoLocationCommand = new AsyncCommand(ExecuteGetGeoLocationCommand, continueOnCapturedContext: false));
+
+
+
 
         public string PageTitle
         {
@@ -234,7 +250,15 @@ namespace AzureBlobStorageSampleApp
         {
             get => _isCustomVision;
             set => SetProperty(ref _isCustomVision, value);
-        }        
+        } 
+
+        bool _isPhotoGallery;
+        public bool IsPhotoGallery
+        {
+            get => _isPhotoGallery;
+            set => SetProperty(ref _isPhotoGallery, value);
+        }  
+
 
         Xamarin.Essentials.Location _location;
 
@@ -436,10 +460,60 @@ namespace AzureBlobStorageSampleApp
         }
 
         //BarcodeDecoding barcode;
+        async Task ExecuteGetPhotoCommand()
+        { 
+            var mediaFile = await GetStoredMediaFileFromCamera().ConfigureAwait(false);
+
+            if (mediaFile is null)
+                return;
+
+            var tempByteArray = ConvertStreamToByteArrary(mediaFile.GetStream());
+
+            PhotoBlob = new PhotoBlobModel
+            {
+                Image = ConvertStreamToByteArrary(mediaFile.GetStream())
+            };
+
+
+            if (IsComputerVision || IsCustomVision)
+            {
+                //TODO
+                this.GetGeoLocationCommand.Execute(null);
+            }
+
+            if (IsComputerVision)
+            {
+                //COMPUTER VISION
+                IList<VisualFeatureTypes> visFeatures = new List<VisualFeatureTypes>() {
+                    VisualFeatureTypes.Tags, VisualFeatureTypes.Color, VisualFeatureTypes.Categories, VisualFeatureTypes.Color, VisualFeatureTypes.Faces, VisualFeatureTypes.Objects, VisualFeatureTypes.ImageType, VisualFeatureTypes.Description
+                };
+     
+                //TODO
+                var client = new ComputerVisionService();
+                using (var photoStream = mediaFile.GetStream())
+                {
+                    //ImageAnalysis analysis = client.AnalyzeImageAsync(photoStream);
+                    //ImageAnalysis analysis = await client.computerVisionClient.AnalyzeImageInStreamAsync(photoStream);    //AnalyzeImageInStreamAsync(photoStream);
+
+                    analysis = await client.computerVisionClient.AnalyzeImageInStreamAsync(photoStream, visFeatures);                                                                                                //DisplayResults (analysis, photoStream);
+                    DisplayResults(analysis);
+                }
+            }
+        
+            if (IsCustomVision)
+            {
+               //CUSTOM VISION
+                var tagList = this.GetBestTagList(mediaFile);
+                DisplayCustomVisionResults(tagList);
+            }
+        }
+
+
 
         async Task ExecuteTakePhotoCommand()
         {
-
+            //DELETE
+            //var mediaFile = await GetStoredMediaFileFromCamera().ConfigureAwait(false);
 
             var mediaFile = await GetMediaFileFromCamera().ConfigureAwait(false);
 
@@ -663,6 +737,30 @@ namespace AzureBlobStorageSampleApp
             return await mediaFileTCS.Task;
         }
 
+        async Task<MediaFile> GetStoredMediaFileFromCamera()
+        {
+            await CrossMedia.Current.Initialize().ConfigureAwait(false);
+
+            if (!CrossMedia.Current.IsPickPhotoSupported)
+            {
+                //OnNoCameraFound();
+                OnNoCameraPickerFound();
+                return null;
+            }
+
+            var mediaFileTCS = new TaskCompletionSource<MediaFile>();
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                mediaFileTCS.SetResult(await CrossMedia.Current.PickPhotoAsync(new PickMediaOptions
+                {
+                    PhotoSize = PhotoSize.Small,
+                    //DefaultCamera = CameraDevice.Rear
+                }));
+            });
+
+            return await mediaFileTCS.Task;
+        }
+
         void UpdatePageTilte()
         {
             if (string.IsNullOrWhiteSpace(PhotoTitle))
@@ -676,6 +774,7 @@ namespace AzureBlobStorageSampleApp
 
         void OnSavePhotoFailed(string errorMessage) => _savePhotoFailedEventManager.HandleEvent(this, errorMessage, nameof(SavePhotoFailed));
         void OnNoCameraFound() => _noCameraFoundEventManager.HandleEvent(this, EventArgs.Empty, nameof(NoCameraFound));
+        void OnNoCameraPickerFound() => _noCameraPickerFoundEventManager.HandleEvent(this, EventArgs.Empty, nameof(OnNoCameraPickerFound));
         void OnSavePhotoCompleted() => _savePhotoCompletedEventManager.HandleEvent(this, EventArgs.Empty, nameof(SavePhotoCompleted));
         #endregion
     }
