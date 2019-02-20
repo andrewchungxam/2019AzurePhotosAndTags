@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Globalization;
 using Xamarin.Forms;
 
 namespace AzureBlobStorageSampleApp
@@ -25,6 +25,32 @@ namespace AzureBlobStorageSampleApp
             throw new NotImplementedException();
         }
     }
+
+    public class DateTimeOffSetToString : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) { 
+            if (value == null)
+                return string.Empty;
+            var dateTimeOffsetValue = (DateTimeOffset)value;
+            if (dateTimeOffsetValue == DateTimeOffset.MinValue)
+                return string.Empty;
+
+            var dtString = dateTimeOffsetValue.ToLocalTime().ToString("MMM d, h:mm tt", new CultureInfo("en-US"));
+            //return $"Barcode: {barcode}";
+
+                                    //CreatedDateTimeString = DateTime.Now.ToString("MMM d h:mm tt", new CultureInfo("en-US")),
+
+            return dtString;
+
+
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) { 
+            throw new NotImplementedException();
+        }
+    }
+
+
 
     public class AddCaptionWordConverter : IValueConverter
     {

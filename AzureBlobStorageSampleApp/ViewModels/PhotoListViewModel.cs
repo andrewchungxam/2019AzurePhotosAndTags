@@ -73,14 +73,16 @@ namespace AzureBlobStorageSampleApp
 
             try
             {
-                var oneSecondTaskToShowSpinner = Task.Delay(1000);
+//                var oneSecondTaskToShowSpinner = Task.Delay(1000);
+                var oneSecondTaskToShowSpinner = Task.Delay(700);
 
                 await DatabaseSyncService.SyncRemoteAndLocalDatabases().ConfigureAwait(false);
 
                 //var unsortedPhotosList = await PhotoDatabase.GetAllPhotos().ConfigureAwait(false);
                 unsortedPhotosList = await PhotoDatabase.GetAllPhotos().ConfigureAwait(false);
 
-                AllPhotosList = new ObservableCollection<PhotoModel>(unsortedPhotosList.OrderBy(x => x.Title));
+                //AllPhotosList = new ObservableCollection<PhotoModel>(unsortedPhotosList.OrderBy(x => x.Title));
+                AllPhotosList = new ObservableCollection<PhotoModel>(unsortedPhotosList.OrderBy(x => x.CreatedAt));
 
                 await oneSecondTaskToShowSpinner.ConfigureAwait(false);
             }

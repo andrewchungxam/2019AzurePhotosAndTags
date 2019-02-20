@@ -37,7 +37,6 @@ namespace AzureBlobStorageSampleApp
         readonly WeakEventManager _noCameraFoundEventManager = new WeakEventManager();
         readonly WeakEventManager _savePhotoCompletedEventManager = new WeakEventManager();
         readonly WeakEventManager<string> _savePhotoFailedEventManager = new WeakEventManager<string>();
-
         readonly WeakEventManager _noCameraPickerFoundEventManager = new WeakEventManager();
 
         #endregion
@@ -259,6 +258,12 @@ namespace AzureBlobStorageSampleApp
             set => SetProperty(ref _isPhotoGallery, value);
         }  
 
+        DateTimeOffset _photoCreatedDateTime;
+        public DateTimeOffset PhotoCreatedDateTime
+        {
+            get => _photoCreatedDateTime;
+            set => SetProperty(ref _photoCreatedDateTime, value);
+        }  
 
         Xamarin.Essentials.Location _location;
 
@@ -354,12 +359,27 @@ namespace AzureBlobStorageSampleApp
 
         //}
 
-
-        async Task ExecuteGetGeoLocationCommand()
+        async Task StampDateTime()
         {
 
             try
             {
+                this.PhotoCreatedDateTime = DateTimeOffset.UtcNow;
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+
+            async Task ExecuteGetGeoLocationCommand()
+        {
+
+            try
+            {
+                ////MOVE TO SEPERATE COMMAND
+                //await this.StampDateTime();
 
                 var locationFromPhone = await GetLocationFromPhone().ConfigureAwait(false);
 
@@ -461,7 +481,9 @@ namespace AzureBlobStorageSampleApp
 
         //BarcodeDecoding barcode;
         async Task ExecuteGetPhotoCommand()
-        { 
+        {
+            await this.StampDateTime();
+             
             var mediaFile = await GetStoredMediaFileFromCamera().ConfigureAwait(false);
 
             if (mediaFile is null)
@@ -512,6 +534,8 @@ namespace AzureBlobStorageSampleApp
 
         async Task ExecuteTakePhotoCommand()
         {
+            await this.StampDateTime();
+
             //DELETE
             //var mediaFile = await GetStoredMediaFileFromCamera().ConfigureAwait(false);
 

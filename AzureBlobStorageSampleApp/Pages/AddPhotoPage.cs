@@ -39,6 +39,7 @@ namespace AzureBlobStorageSampleApp
         readonly Label _computerVisionSwitchLabel;
         readonly Label _customVisionSwitchLabel;
 
+        readonly Label _dateTimeLabel;
 
         readonly string _geoString;
         readonly string _generalCognitiveServices;
@@ -52,6 +53,16 @@ namespace AzureBlobStorageSampleApp
             ViewModel.NoCameraFound += HandleNoCameraFound;
             ViewModel.SavePhotoCompleted += HandleSavePhotoCompleted;
             ViewModel.SavePhotoFailed += HandleSavePhotoFailed;
+
+            if (Connectivity.NetworkAccess == NetworkAccess.Internet)
+            { 
+                ViewModel.IsInternetConnectionActive = true;
+            }
+            else 
+            { 
+               ViewModel.IsInternetConnectionActive = false;
+
+            }
 
             _photoTitleEntry = new Entry
             {
@@ -75,6 +86,17 @@ namespace AzureBlobStorageSampleApp
             };
 
             _geoLabel.SetBinding(Label.TextProperty, nameof(ViewModel.GeoString));
+
+            _dateTimeLabel = new Label
+            {
+                //BackgroundColor = Color.White,
+                //TextColor = ColorConstants.TextColor,
+                //HorizontalOptions = LayoutOptions.FillAndExpand,
+                TextColor = Color.White,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+            };
+
+            _dateTimeLabel.SetBinding(Label.TextProperty, nameof(ViewModel.PhotoCreatedDateTime), BindingMode.Default, new DateTimeOffSetToString());
 
             //ViewModel.GeoString = "Paramus, NJ";
 
@@ -190,6 +212,11 @@ namespace AzureBlobStorageSampleApp
             _customVisionSwitch.SetBinding(SwitchChangeColor.TrueColorProperty, nameof(ViewModel.SwitchTrueColor));
             _customVisionSwitch.SetBinding(Switch.IsToggledProperty , nameof(ViewModel.IsCustomVision));
 
+                        _computerVisionSwitch.SetBinding(Switch.IsVisibleProperty, nameof(ViewModel.IsInternetConnectionActive) );
+
+            _customVisionSwitch.SetBinding(Switch.IsVisibleProperty, nameof(ViewModel.IsInternetConnectionActive) );
+
+
             _photoGallerySwitch = new Switch() { };
             _photoGallerySwitch.Effects.Add(Effect.Resolve("MyCompany.SwitchChangeColorEffect"));
             _photoGallerySwitch.SetBinding(SwitchChangeColor.TrueColorProperty, nameof(ViewModel.SwitchTrueColor));
@@ -223,6 +250,8 @@ namespace AzureBlobStorageSampleApp
                 VerticalOptions = LayoutOptions.Center
                 };
 
+            _computerVisionSwitchLabel.SetBinding(Label.IsVisibleProperty, nameof(ViewModel.IsInternetConnectionActive) );
+
             _customVisionSwitchLabel = new Label(){ 
                 Text = "Custom AI",
                 //TextColor = ColorConstants.TextColor,
@@ -230,6 +259,8 @@ namespace AzureBlobStorageSampleApp
                 HorizontalOptions = LayoutOptions.Start,
                 VerticalOptions = LayoutOptions.Center
              };
+            _customVisionSwitchLabel.SetBinding(Label.IsVisibleProperty, nameof(ViewModel.IsInternetConnectionActive) );
+
 
             Grid gridLayout = new Grid()
             {
@@ -411,6 +442,7 @@ namespace AzureBlobStorageSampleApp
                     _photoTitleEntry,
                     _scanLabel,
                     _geoLabel,
+                    _dateTimeLabel,
                     _takePhotoButton,
                     _takeScanButton,
                     _getPhotoGalleryButton,
@@ -456,5 +488,31 @@ namespace AzureBlobStorageSampleApp
         void ClosePage() =>
             Device.BeginInvokeOnMainThread(async () => await Navigation.PopModalAsync());
         #endregion
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            Connectivity.ConnectivityChanged += Connectivity_ConnectivityChanged;
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            Connectivity.ConnectivityChanged -= Connectivity_ConnectivityChanged;
+        }
+
+
+        void Connectivity_ConnectivityChanged(object sender, ConnectivityChangedEventArgs e)
+        {
+            if (e.NetworkAccess == NetworkAccess.Internet)
+            { 
+                ViewModel.IsInternetConnectionActive = true;
+            }
+            else
+            { 
+                ViewModel.IsInternetConnectionActive = false;
+            }
+
+        }
     }
 }
